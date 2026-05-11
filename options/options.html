@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Summarizer — Settings</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f4f4f5;
+      --border: #e4e4e7;
+      --text: #18181b;
+      --text-muted: #71717a;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-text: #ffffff;
+      --success-bg: #f0fdf4;
+      --success-border: #86efac;
+      --success-text: #15803d;
+      --radius: 8px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #18181b; --bg-secondary: #27272a; --border: #3f3f46;
+        --text: #fafafa; --text-muted: #a1a1aa;
+        --success-bg: #052e16; --success-border: #166534; --success-text: #86efac;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      background: var(--bg);
+      color: var(--text);
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 28px; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    label { font-size: 13px; font-weight: 500; }
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-secondary);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input:focus { border-color: var(--primary); }
+    .hint { font-size: 12px; color: var(--text-muted); }
+    .hint a { color: var(--primary); text-decoration: none; }
+    .hint a:hover { text-decoration: underline; }
+    .toggle-row { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+    .toggle-row input { width: auto; }
+    .toggle-row label { font-weight: 400; cursor: pointer; margin: 0; }
+    .save-btn {
+      padding: 10px 24px;
+      background: var(--primary);
+      color: var(--primary-text);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .save-btn:hover { background: var(--primary-hover); }
+    .toast {
+      margin-top: 16px;
+      padding: 10px 14px;
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success-text);
+      border-radius: var(--radius);
+      font-size: 13px;
+      display: none;
+    }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    .section-title { font-size: 13px; font-weight: 600; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  </style>
+</head>
+<body>
+  <h1>⚙️ Settings</h1>
+  <p class="subtitle">Configure your AI Page Summarizer extension.</p>
+
+  <div class="field">
+    <label for="api-key-input">OpenAI API Key</label>
+    <input type="password" id="api-key-input" placeholder="sk-..." autocomplete="off" spellcheck="false" />
+    <div class="toggle-row">
+      <input type="checkbox" id="show-key" />
+      <label for="show-key">Show key</label>
+    </div>
+    <span class="hint">
+      Get your key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a>.
+      Your key is stored locally using <code>chrome.storage.sync</code> and is never sent anywhere except to OpenAI.
+    </span>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="section-title">Model</div>
+  <div class="field">
+    <label for="model-select">GPT Model</label>
+    <select id="model-select" style="padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-secondary);color:var(--text);font-size:14px;">
+      <option value="gpt-4o">GPT-4o (Recommended)</option>
+      <option value="gpt-4o-mini">GPT-4o mini (Faster &amp; cheaper)</option>
+      <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Legacy)</option>
+    </select>
+  </div>
+
+  <button class="save-btn" id="save-btn">Save Settings</button>
+  <div class="toast" id="toast">✅ Settings saved!</div>
+
+  <script src="options.js"></script>
+</body>
+</html>

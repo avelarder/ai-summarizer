@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Page Summarizer</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <img src="../icons/icon48.png" alt="logo" class="logo" />
+      <h1 class="title">AI Summarizer</h1>
+      <a href="#" id="settings-link" class="settings-icon" title="Settings">⚙️</a>
+    </header>
+
+    <div class="mode-toggle" role="group" aria-label="Summarize mode">
+      <button class="mode-btn active" id="btn-page" data-mode="page">
+        📄 Full Page
+      </button>
+      <button class="mode-btn" id="btn-selection" data-mode="selection">
+        ✂️ Selection
+      </button>
+    </div>
+
+    <button id="summarize-btn" class="primary-btn">
+      <span id="btn-label">Summarize</span>
+      <span id="btn-spinner" class="spinner hidden" aria-hidden="true"></span>
+    </button>
+
+    <div id="result-area" class="result-area hidden">
+      <div id="error-box" class="error-box hidden">
+        <span id="error-text"></span>
+      </div>
+      <div id="summary-box" class="summary-box hidden">
+        <div class="summary-header">
+          <span class="summary-label">Summary</span>
+          <button id="copy-btn" class="copy-btn" title="Copy to clipboard">📋 Copy</button>
+        </div>
+        <div id="summary-text" class="summary-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
