@@ -97,7 +97,7 @@ summarizeBtn.addEventListener("click", async () => {
 
 // ── Copy to clipboard ─────────────────────────────────────────────────────────
 copyBtn.addEventListener("click", async () => {
-  const text = summaryText.textContent;
+  const text = summaryText.innerText;
   if (!text) return;
   try {
     await navigator.clipboard.writeText(text);
@@ -130,8 +130,53 @@ function showError(message) {
   errorText.textContent = message;
 }
 
+function markdownToHtml(md) {
+  const lines = md.split("\n");
+  const html = [];
+  let inUl = false, inOl = false;
+
+  const closeList = () => {
+    if (inUl) { html.push("</ul>"); inUl = false; }
+    if (inOl) { html.push("</ol>"); inOl = false; }
+  };
+
+  const inline = (s) =>
+    s
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>")
+      .replace(/_(.+?)_/g, "<em>$1</em>");
+
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+
+    const h3 = line.match(/^### (.+)/);
+    const h2 = line.match(/^## (.+)/);
+    const h1 = line.match(/^# (.+)/);
+    const ul = line.match(/^[-*] (.+)/);
+    const ol = line.match(/^\d+\. (.+)/);
+
+    if (h3) { closeList(); html.push(`<h3>${inline(h3[1])}</h3>`); }
+    else if (h2) { closeList(); html.push(`<h2>${inline(h2[1])}</h2>`); }
+    else if (h1) { closeList(); html.push(`<h1>${inline(h1[1])}</h1>`); }
+    else if (ul) {
+      if (!inUl) { closeList(); html.push("<ul>"); inUl = true; }
+      html.push(`<li>${inline(ul[1])}</li>`);
+    } else if (ol) {
+      if (!inOl) { closeList(); html.push("<ol>"); inOl = true; }
+      html.push(`<li>${inline(ol[1])}</li>`);
+    } else if (line === "") {
+      closeList();
+    } else {
+      closeList();
+      html.push(`<p>${inline(line)}</p>`);
+    }
+  }
+  closeList();
+  return html.join("");
+}
+
 function showSummary(text) {
   resultArea.classList.remove("hidden");
   summaryBox.classList.remove("hidden");
-  summaryText.textContent = text;
+  summaryText.innerHTML = markdownToHtml(text);
 }

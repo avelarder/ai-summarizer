@@ -216,9 +216,34 @@ body {
   font-size: 13px;
   line-height: 1.6;
   color: var(--text);
-  white-space: pre-wrap;
   max-height: 300px;
   overflow-y: auto;
+}
+
+.summary-text h1,
+.summary-text h2,
+.summary-text h3 {
+  margin: 8px 0 4px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.summary-text h1 { font-size: 15px; }
+.summary-text h2 { font-size: 14px; }
+.summary-text h3 { font-size: 13px; }
+
+.summary-text p {
+  margin: 4px 0;
+}
+
+.summary-text ul,
+.summary-text ol {
+  padding-left: 18px;
+  margin: 4px 0;
+}
+
+.summary-text li {
+  margin: 2px 0;
 }
 
 /* Utility */
