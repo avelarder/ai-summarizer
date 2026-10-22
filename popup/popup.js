@@ -5,6 +5,7 @@
 // ── DOM refs ────────────────────────────────────────────────────────────────
 const btnPage       = document.getElementById("btn-page");
 const btnSelection  = document.getElementById("btn-selection");
+const btnClipboard  = document.getElementById("btn-clipboard");
 const summarizeBtn  = document.getElementById("summarize-btn");
 const btnLabel      = document.getElementById("btn-label");
 const btnSpinner    = document.getElementById("btn-spinner");
@@ -15,18 +16,24 @@ const summaryBox    = document.getElementById("summary-box");
 const summaryText   = document.getElementById("summary-text");
 const copyBtn       = document.getElementById("copy-btn");
 const settingsLink  = document.getElementById("settings-link");
+const MAX_TEXT_CHARS = 15000;
 
 // ── State ────────────────────────────────────────────────────────────────────
-let selectedMode = "page"; // "page" | "selection"
+let selectedMode = "page"; // "page" | "selection" | "clipboard"
 
 // ── Mode toggle ──────────────────────────────────────────────────────────────
 btnPage.addEventListener("click", () => setMode("page"));
 btnSelection.addEventListener("click", () => setMode("selection"));
+btnClipboard.addEventListener("click", () => setMode("clipboard"));
 
 function setMode(mode) {
   selectedMode = mode;
   btnPage.classList.toggle("active", mode === "page");
   btnSelection.classList.toggle("active", mode === "selection");
+  btnClipboard.classList.toggle("active", mode === "clipboard");
+  btnPage.setAttribute("aria-pressed", String(mode === "page"));
+  btnSelection.setAttribute("aria-pressed", String(mode === "selection"));
+  btnClipboard.setAttribute("aria-pressed", String(mode === "clipboard"));
 }
 
 // ── Settings link ────────────────────────────────────────────────────────────
@@ -41,37 +48,65 @@ summarizeBtn.addEventListener("click", async () => {
   hideResults();
 
   try {
-    // 1. Get the active tab
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-    if (!tab?.id) {
-      showError("Could not identify the active tab.");
-      return;
-    }
-
-    // 2. Request text from the content script
-    let pageResponse;
-    try {
-      pageResponse = await chrome.tabs.sendMessage(tab.id, {
-        action: "getPageText",
-        mode: selectedMode,
+    let text;
+    if (selectedMode === "clipboard") {
+      const clipboardPermissionGranted = await chrome.permissions.request({
+        permissions: ["clipboardRead"],
       });
-    } catch {
-      // Content script may not be injected on restricted pages (e.g., chrome:// URLs)
-      showError(
-        "Cannot access this page. Try a regular website (not browser internal pages)."
-      );
-      return;
+      if (!clipboardPermissionGranted) {
+        showError(
+          "Clipboard access was not granted. Allow the permission and try again."
+        );
+        return;
+      }
+
+      try {
+        text = (await navigator.clipboard.readText()).trim().slice(0, MAX_TEXT_CHARS);
+      } catch (err) {
+        const reason = err?.name ? ` (${err.name})` : "";
+        showError(
+          `Could not read the clipboard${reason}. Check your browser's clipboard settings and try again.`
+        );
+        return;
+      }
+    } else {
+      // 1. Get the active tab
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+      if (!tab?.id) {
+        showError("Could not identify the active tab.");
+        return;
+      }
+
+      // 2. Request text from the content script
+      let pageResponse;
+      try {
+        pageResponse = await chrome.tabs.sendMessage(tab.id, {
+          action: "getPageText",
+          mode: selectedMode,
+        });
+      } catch {
+        // Content script may not be injected on restricted pages (e.g., chrome:// URLs)
+        showError(
+          "Cannot access this page. Try a regular website (not browser internal pages)."
+        );
+        return;
+      }
+
+      if (pageResponse?.error) {
+        showError(pageResponse.error);
+        return;
+      }
+
+      text = pageResponse?.text;
     }
 
-    if (pageResponse?.error) {
-      showError(pageResponse.error);
-      return;
-    }
-
-    const text = pageResponse?.text;
     if (!text) {
-      showError("No text could be extracted from this page.");
+      showError(
+        selectedMode === "clipboard"
+          ? "The clipboard is empty or does not contain text."
+          : "No text could be extracted from this page."
+      );
       return;
     }
 

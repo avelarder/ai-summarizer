@@ -15,11 +15,14 @@
     </header>
 
     <div class="mode-toggle" role="group" aria-label="Summarize mode">
-      <button class="mode-btn active" id="btn-page" data-mode="page">
+      <button class="mode-btn active" id="btn-page" data-mode="page" aria-pressed="true">
         📄 Full Page
       </button>
-      <button class="mode-btn" id="btn-selection" data-mode="selection">
+      <button class="mode-btn" id="btn-selection" data-mode="selection" aria-pressed="false">
         ✂️ Selection
+      </button>
+      <button class="mode-btn" id="btn-clipboard" data-mode="clipboard" aria-pressed="false">
+        Clipboard
       </button>
     </div>
 

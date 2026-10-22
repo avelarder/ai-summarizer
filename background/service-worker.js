@@ -38,7 +38,9 @@ async function handleSummarize(text, mode) {
   const userPrompt =
     mode === "selection"
       ? `Please summarize the following selected text from a webpage:\n\n${text}`
-      : `Please summarize the following webpage content:\n\n${text}`;
+      : mode === "clipboard"
+        ? `Please summarize the following text from the clipboard:\n\n${text}`
+        : `Please summarize the following webpage content:\n\n${text}`;
 
   const response = await fetch(OPENAI_API_URL, {
     method: "POST",

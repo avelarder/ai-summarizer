@@ -33,6 +33,9 @@
     "storage",
     "scripting"
   ],
+  "optional_permissions": [
+    "clipboardRead"
+  ],
   "host_permissions": [
     "https://api.openai.com/*"
   ]
